@@ -29,9 +29,10 @@ GREEN: after adding the minimal export, `npx vitest run tests/unit/smoke.test.ts
 - `npm run test:e2e`: passed — explicit Task 11 Playwright replacement placeholder.
 - `npm run build`: completed; `.next/BUILD_ID` was generated after `next build`.
 
-## Commit hash
+## Commit hashes
 
-Pending commit.
+- Implementation: `aaf4cf8`
+- Quality-gate fixes: `b224a30`
 
 ## Self-review
 
@@ -50,3 +51,8 @@ Pending commit.
 - Removed the generated `.next/types/routes.d.ts` reference from `next-env.d.ts`; a fresh checkout no longer needs a prior Next build to typecheck.
 - Added `tests/**/*.ts` to the main TypeScript program and removed the test exclusion, so `npm run typecheck` now checks the smoke test as well.
 - A bounded `npm run typecheck` was started, but the orchestration session did not return before it was interrupted; no post-fix test result is claimed for this round.
+
+## Fix round 2 (verification evidence)
+
+- Ran `.\\node_modules\\.bin\\tsc.cmd --noEmit --pretty false` after the configuration fixes.
+- Result: exit code `0` in 3.19 seconds with no diagnostics.

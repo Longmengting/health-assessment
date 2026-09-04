@@ -1,0 +1,33 @@
+{
+  "name": "health-path",
+  "version": "0.1.0",
+  "private": true,
+  "engines": {
+    "node": "22.x"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --pool=forks --maxWorkers=1 --no-file-parallelism",
+    "test:e2e": "node -e \"console.log('E2E placeholder: replace with Playwright in Task 11')\""
+  },
+  "dependencies": {
+    "next": "15.5.2",
+    "react": "19.1.1",
+    "react-dom": "19.1.1",
+    "zod": "3.24.2"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "3.3.1",
+    "@types/node": "22.15.34",
+    "@types/react": "19.1.10",
+    "@types/react-dom": "19.1.7",
+    "eslint": "9.34.0",
+    "eslint-config-next": "15.5.2",
+    "typescript": "5.8.3",
+    "vitest": "3.2.4"
+  }
+}

@@ -1,0 +1,53 @@
+:root {
+  color-scheme: light;
+  font-family: Arial, Helvetica, sans-serif;
+  background: #f4f8f7;
+  color: #19332f;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+main {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  padding: 2rem;
+}
+
+section {
+  width: min(100%, 42rem);
+  padding: 2.5rem;
+  border-radius: 1rem;
+  background: #ffffff;
+  box-shadow: 0 1rem 3rem rgb(25 51 47 / 12%);
+}
+
+h1 {
+  margin: 0.25rem 0 1rem;
+  font-size: clamp(2rem, 7vw, 3.5rem);
+}
+
+p {
+  line-height: 1.6;
+}
+
+.eyebrow {
+  margin: 0;
+  color: #35675d;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.notice {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  border-left: 0.25rem solid #35675d;
+  background: #eaf4f1;
+}

@@ -191,11 +191,10 @@ describe.skipIf(!hasProtectedTestDatabase)("assessment submission persistence", 
       algorithmVersion: "1.0.0",
       bmi: expected.bmi,
       bmiCategory: expected.bmiCategory,
-      estimatedTargetDate: "2026-06-25T00:00:00.000Z",
       createdAt: persisted.result?.createdAt.toISOString(),
     });
     expect(JSON.stringify(result)).not.toMatch(
-      /tokenHash|subscription|dailyCalories|protectedData|basalMetabolicRate|totalDailyEnergyExpenditure/,
+      /tokenHash|subscription|dailyCalories|estimatedTargetDate|protectedData|basalMetabolicRate|totalDailyEnergyExpenditure/,
     );
     expect(persisted).toMatchObject({
       status: "COMPLETED",
@@ -243,7 +242,7 @@ describe.skipIf(!hasProtectedTestDatabase)("assessment submission persistence", 
       where: { sessionId: session.id },
     });
 
-    expect(result.estimatedTargetDate).toBeNull();
+    expect(JSON.stringify(result)).not.toContain("estimatedTargetDate");
     expect(persisted.estimatedTargetDate).toBeNull();
   });
 

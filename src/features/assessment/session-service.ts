@@ -54,7 +54,6 @@ const assessmentResultSelect = {
   algorithmVersion: true,
   bmi: true,
   bmiCategory: true,
-  estimatedTargetDate: true,
   createdAt: true,
 } satisfies Prisma.AssessmentResultSelect;
 
@@ -76,7 +75,6 @@ type AssessmentResultSource = Pick<
   | "algorithmVersion"
   | "bmi"
   | "bmiCategory"
-  | "estimatedTargetDate"
   | "createdAt"
 >;
 
@@ -102,7 +100,6 @@ export interface AssessmentResultDTO {
   algorithmVersion: string;
   bmi: number;
   bmiCategory: BmiCategory;
-  estimatedTargetDate: string | null;
   createdAt: string;
 }
 
@@ -177,10 +174,6 @@ function toAssessmentResultDto(
     algorithmVersion: result.algorithmVersion,
     bmi: Number(result.bmi),
     bmiCategory: bmiCategorySchema.parse(result.bmiCategory),
-    estimatedTargetDate:
-      result.estimatedTargetDate === null
-        ? null
-        : result.estimatedTargetDate.toISOString(),
     createdAt: result.createdAt.toISOString(),
   };
 }

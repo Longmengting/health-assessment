@@ -1,0 +1,92 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum AssessmentSessionStatus {
+  DRAFT
+  COMPLETED
+}
+
+enum SubscriptionStatus {
+  INACTIVE
+  ACTIVE
+  EXPIRED
+}
+
+enum PaymentEventStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
+}
+
+model AssessmentSession {
+  id            String                  @id @default(uuid())
+  tokenHash     String                  @unique
+  status        AssessmentSessionStatus @default(DRAFT)
+  currentStep   Int?
+  version       Int                     @default(0)
+  completedAt   DateTime?
+  createdAt     DateTime                @default(now())
+  updatedAt     DateTime                @updatedAt
+  answers       AssessmentAnswer[]
+  result        AssessmentResult?
+  subscription  Subscription?
+  paymentEvents PaymentEvent[]
+}
+
+model AssessmentAnswer {
+  id        String            @id @default(uuid())
+  sessionId String
+  session   AssessmentSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  step      String
+  payload   Json
+  revision  Int               @default(1)
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+
+  @@unique([sessionId, step])
+  @@index([sessionId])
+}
+
+model AssessmentResult {
+  id                  String            @id @default(uuid())
+  sessionId           String            @unique
+  session             AssessmentSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  algorithmVersion    String
+  bmi                 Decimal
+  dailyCalories       Decimal
+  bmiCategory         String
+  estimatedTargetDate DateTime
+  protectedData       Json
+  createdAt           DateTime          @default(now())
+}
+
+model Subscription {
+  id                String             @id @default(uuid())
+  sessionId         String             @unique
+  session           AssessmentSession  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  status            SubscriptionStatus @default(INACTIVE)
+  provider          String             @default("MOCK")
+  externalPaymentId String?
+  activatedAt       DateTime?
+  expiresAt         DateTime?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+}
+
+model PaymentEvent {
+  id        String             @id @default(uuid())
+  eventId   String             @unique
+  sessionId String
+  session   AssessmentSession  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  status    PaymentEventStatus
+  payload   Json
+  createdAt DateTime           @default(now())
+
+  @@index([sessionId])
+}

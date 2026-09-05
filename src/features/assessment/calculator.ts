@@ -53,15 +53,15 @@ function categoryFor(bmi: number): BmiCategory {
 function buildPredictionCurve(
   startDate: Date,
   input: AssessmentInput,
-  weeklyWeightChangeKg: number,
+  internalWeeklyWeightChangeKg: number,
 ): PredictionPoint[] {
   return Array.from({ length: 12 }, (_, index) => {
     const week = index + 1;
-    const unconstrainedWeight = input.weightKg + weeklyWeightChangeKg * week;
+    const unconstrainedWeight = input.weightKg + internalWeeklyWeightChangeKg * week;
     const weightKg =
-      weeklyWeightChangeKg < 0
+      internalWeeklyWeightChangeKg < 0
         ? Math.max(input.targetWeightKg, unconstrainedWeight)
-        : weeklyWeightChangeKg > 0
+        : internalWeeklyWeightChangeKg > 0
           ? Math.min(input.targetWeightKg, unconstrainedWeight)
           : input.weightKg;
 
@@ -99,7 +99,8 @@ export function calculateAssessment(input: AssessmentInput, today: Date): Assess
           minimumCalories,
           Math.round(totalDailyEnergyExpenditure + direction * dailyAdjustment),
         );
-  const weeklyWeightChangeKg = roundToOneDecimal(direction * baseWeeklyChange);
+  const internalWeeklyWeightChangeKg = direction * baseWeeklyChange;
+  const weeklyWeightChangeKg = roundToOneDecimal(internalWeeklyWeightChangeKg);
   const weightDelta = Math.abs(validInput.targetWeightKg - validInput.weightKg);
   const estimatedWeeks = direction === 0 ? 0 : Math.ceil(weightDelta / baseWeeklyChange);
 
@@ -112,6 +113,6 @@ export function calculateAssessment(input: AssessmentInput, today: Date): Assess
     estimatedTargetDate: direction === 0 ? null : toIsoDate(addUtcWeeks(startDate, estimatedWeeks)),
     weeklyWeightChangeKg,
     disclaimer: EDUCATIONAL_DISCLAIMER,
-    predictionCurve: buildPredictionCurve(startDate, validInput, weeklyWeightChangeKg),
+    predictionCurve: buildPredictionCurve(startDate, validInput, internalWeeklyWeightChangeKg),
   };
 }

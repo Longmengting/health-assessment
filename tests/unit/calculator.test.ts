@@ -105,6 +105,17 @@ describe("calculateAssessment", () => {
     expect(result.predictionCurve.every((point) => point.weightKg >= 70 && point.weightKg <= 80)).toBe(true);
   });
 
+  it("does not reach a 70 to 66 kg loss target before its twelve-week target date", () => {
+    const result = calculateAssessment(
+      { ...losingInput, weightKg: 70, targetWeightKg: 66 },
+      today,
+    );
+
+    expect(result.estimatedTargetDate).toBe("2026-03-26");
+    expect(result.predictionCurve.slice(0, -1).every((point) => point.weightKg > 66)).toBe(true);
+    expect(result.predictionCurve[11]).toEqual({ date: "2026-03-26", weightKg: 66 });
+  });
+
   it("holds the curve at the target once a short goal is reached", () => {
     const result = calculateAssessment(
       { ...losingInput, weightKg: 100, targetWeightKg: 99 },

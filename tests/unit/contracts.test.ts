@@ -1,7 +1,20 @@
 import { describe, expect, it } from "vitest";
 import { ZodError } from "zod";
 
-import { parseStepPayload } from "../../src/features/assessment/contracts";
+import {
+  assessmentInputSchema,
+  parseStepPayload,
+} from "../../src/features/assessment/contracts";
+
+const validAssessmentInput = {
+  gender: "female",
+  goal: "lose",
+  age: 30,
+  heightCm: 170,
+  weightKg: 70,
+  targetWeightKg: 65,
+  activityLevel: "moderate",
+} as const;
 
 describe("assessment step contracts", () => {
   it("parses the exact payload required for each assessment step", () => {
@@ -53,5 +66,15 @@ describe("assessment step contracts", () => {
     ["activity", { activityLevel: "active", extra: true }],
   ] as const)("rejects unknown fields for the %s step", (step, payload) => {
     expect(() => parseStepPayload(step, payload)).toThrow(ZodError);
+  });
+
+  it.each([
+    ["an unknown field", { ...validAssessmentInput, unexpected: true }],
+    ["numeric strings", { ...validAssessmentInput, age: "30", heightCm: "170" }],
+    ["NaN", { ...validAssessmentInput, weightKg: Number.NaN }],
+    ["positive infinity", { ...validAssessmentInput, targetWeightKg: Number.POSITIVE_INFINITY }],
+    ["negative infinity", { ...validAssessmentInput, targetWeightKg: Number.NEGATIVE_INFINITY }],
+  ])("rejects a final assessment input containing %s", (_reason, input) => {
+    expect(() => assessmentInputSchema.parse(input)).toThrow(ZodError);
   });
 });

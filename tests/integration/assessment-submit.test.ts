@@ -83,19 +83,20 @@ describe.skipIf(!hasProtectedTestDatabase)("assessment submission persistence", 
   async function saveCompleteAssessment(
     request: Request,
     sessionId: string,
+    input: AssessmentInput = assessmentInput,
   ) {
     await saveStep({
       request,
       sessionId,
       step: "gender",
-      payload: { gender: assessmentInput.gender },
+      payload: { gender: input.gender },
       expectedVersion: 0,
     });
     await saveStep({
       request,
       sessionId,
       step: "goal",
-      payload: { goal: assessmentInput.goal },
+      payload: { goal: input.goal },
       expectedVersion: 1,
     });
     await saveStep({
@@ -103,10 +104,10 @@ describe.skipIf(!hasProtectedTestDatabase)("assessment submission persistence", 
       sessionId,
       step: "body",
       payload: {
-        age: assessmentInput.age,
-        heightCm: assessmentInput.heightCm,
-        weightKg: assessmentInput.weightKg,
-        targetWeightKg: assessmentInput.targetWeightKg,
+        age: input.age,
+        heightCm: input.heightCm,
+        weightKg: input.weightKg,
+        targetWeightKg: input.targetWeightKg,
       },
       expectedVersion: 2,
     });
@@ -114,7 +115,7 @@ describe.skipIf(!hasProtectedTestDatabase)("assessment submission persistence", 
       request,
       sessionId,
       step: "activity",
-      payload: { activityLevel: assessmentInput.activityLevel },
+      payload: { activityLevel: input.activityLevel },
       expectedVersion: 3,
     });
   }
@@ -190,10 +191,11 @@ describe.skipIf(!hasProtectedTestDatabase)("assessment submission persistence", 
       algorithmVersion: "1.0.0",
       bmi: expected.bmi,
       bmiCategory: expected.bmiCategory,
+      estimatedTargetDate: "2026-06-25T00:00:00.000Z",
       createdAt: persisted.result?.createdAt.toISOString(),
     });
     expect(JSON.stringify(result)).not.toMatch(
-      /tokenHash|subscription|dailyCalories|estimatedTargetDate|protectedData|basalMetabolicRate|totalDailyEnergyExpenditure/,
+      /tokenHash|subscription|dailyCalories|protectedData|basalMetabolicRate|totalDailyEnergyExpenditure/,
     );
     expect(persisted).toMatchObject({
       status: "COMPLETED",
@@ -207,7 +209,7 @@ describe.skipIf(!hasProtectedTestDatabase)("assessment submission persistence", 
     expect(Number(persisted.result?.dailyCalories)).toBe(
       expected.recommendedDailyCalories,
     );
-    expect(persisted.result?.estimatedTargetDate.toISOString()).toBe(
+    expect(persisted.result?.estimatedTargetDate?.toISOString()).toBe(
       "2026-06-25T00:00:00.000Z",
     );
     expect(persisted.result?.protectedData).toEqual({
@@ -217,6 +219,32 @@ describe.skipIf(!hasProtectedTestDatabase)("assessment submission persistence", 
       disclaimer: expected.disclaimer,
       predictionCurve: expected.predictionCurve,
     });
+  });
+
+  it("preserves a null estimated target date for a maintenance goal", async () => {
+    const maintainingInput: AssessmentInput = {
+      gender: "female",
+      goal: "maintain",
+      age: 35,
+      heightCm: 165,
+      weightKg: 60,
+      targetWeightKg: 60,
+      activityLevel: "light",
+    };
+    const { request, session } = await sessionFixture();
+    await saveCompleteAssessment(request, session.id, maintainingInput);
+
+    const result = await submitAssessment({
+      request,
+      sessionId: session.id,
+      today: new Date("2026-01-01T15:30:00.000Z"),
+    });
+    const persisted = await testPrisma.assessmentResult.findUniqueOrThrow({
+      where: { sessionId: session.id },
+    });
+
+    expect(result.estimatedTargetDate).toBeNull();
+    expect(persisted.estimatedTargetDate).toBeNull();
   });
 
   it("rolls back when stored JSON cannot form a valid assessment input", async () => {

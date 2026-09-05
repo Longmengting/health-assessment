@@ -61,7 +61,7 @@ model AssessmentResult {
   bmi                 Decimal
   dailyCalories       Decimal
   bmiCategory         String
-  estimatedTargetDate DateTime
+  estimatedTargetDate DateTime?
   protectedData       Json
   createdAt           DateTime          @default(now())
 }

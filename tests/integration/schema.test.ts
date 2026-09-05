@@ -60,6 +60,7 @@ describe("assessment persistence schema", () => {
     expect(result).toMatch(/sessionId\s+String\s+@unique/);
     expect(result).toMatch(/bmi\s+Decimal/);
     expect(result).toMatch(/dailyCalories\s+Decimal/);
+    expect(result).toMatch(/estimatedTargetDate\s+DateTime\?/);
     expect(result).toMatch(/protectedData\s+Json/);
     expect(result).toContain("onDelete: Cascade");
   });

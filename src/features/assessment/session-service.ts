@@ -54,6 +54,7 @@ const assessmentResultSelect = {
   algorithmVersion: true,
   bmi: true,
   bmiCategory: true,
+  estimatedTargetDate: true,
   createdAt: true,
 } satisfies Prisma.AssessmentResultSelect;
 
@@ -70,7 +71,13 @@ type SessionProgressSource = {
 
 type AssessmentResultSource = Pick<
   AssessmentResult,
-  "id" | "sessionId" | "algorithmVersion" | "bmi" | "bmiCategory" | "createdAt"
+  | "id"
+  | "sessionId"
+  | "algorithmVersion"
+  | "bmi"
+  | "bmiCategory"
+  | "estimatedTargetDate"
+  | "createdAt"
 >;
 
 export interface SessionAnswerDto {
@@ -95,6 +102,7 @@ export interface AssessmentResultDTO {
   algorithmVersion: string;
   bmi: number;
   bmiCategory: BmiCategory;
+  estimatedTargetDate: string | null;
   createdAt: string;
 }
 
@@ -169,6 +177,10 @@ function toAssessmentResultDto(
     algorithmVersion: result.algorithmVersion,
     bmi: Number(result.bmi),
     bmiCategory: bmiCategorySchema.parse(result.bmiCategory),
+    estimatedTargetDate:
+      result.estimatedTargetDate === null
+        ? null
+        : result.estimatedTargetDate.toISOString(),
     createdAt: result.createdAt.toISOString(),
   };
 }
@@ -195,23 +207,6 @@ function assessmentInputFromAnswers(
     ...body,
     ...activity,
   });
-}
-
-function targetDateForPersistence(
-  estimatedTargetDate: string | null,
-  calculationDate: Date,
-): Date {
-  if (estimatedTargetDate !== null) {
-    return new Date(`${estimatedTargetDate}T00:00:00.000Z`);
-  }
-
-  return new Date(
-    Date.UTC(
-      calculationDate.getUTCFullYear(),
-      calculationDate.getUTCMonth(),
-      calculationDate.getUTCDate(),
-    ),
-  );
 }
 
 export function toSessionProgressDto(
@@ -504,10 +499,10 @@ export async function submitAssessment({
         bmi: calculation.bmi,
         dailyCalories: calculation.recommendedDailyCalories,
         bmiCategory: calculation.bmiCategory,
-        estimatedTargetDate: targetDateForPersistence(
-          calculation.estimatedTargetDate,
-          calculationDate,
-        ),
+        estimatedTargetDate:
+          calculation.estimatedTargetDate === null
+            ? null
+            : new Date(`${calculation.estimatedTargetDate}T00:00:00.000Z`),
         protectedData,
       },
       select: assessmentResultSelect,

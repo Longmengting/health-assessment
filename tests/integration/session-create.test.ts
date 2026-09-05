@@ -91,7 +91,7 @@ describe.skipIf(!hasProtectedTestDatabase)("session creation and recovery", () =
   });
 
   it("returns a public session envelope and sets a hardened session cookie", async () => {
-    const response = await POST(new Request("http://localhost/api/sessions", { method: "POST" }));
+    const response = await POST();
     const payload = await response.json();
     const setCookie = response.headers.get("set-cookie") ?? "";
 

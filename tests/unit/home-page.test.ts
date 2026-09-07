@@ -1,6 +1,5 @@
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import React from "react";
 import { describe, expect, it } from "vitest";
 
 import HomePage from "../../src/app/page";

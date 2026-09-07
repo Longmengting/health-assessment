@@ -1,53 +1,36 @@
-:root {
-  color-scheme: light;
-  font-family: Arial, Helvetica, sans-serif;
-  background: #f4f8f7;
-  color: #19332f;
-}
-
-* {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-}
-
-main {
-  display: grid;
-  min-height: 100vh;
-  place-items: center;
-  padding: 2rem;
-}
-
-section {
-  width: min(100%, 42rem);
-  padding: 2.5rem;
-  border-radius: 1rem;
-  background: #ffffff;
-  box-shadow: 0 1rem 3rem rgb(25 51 47 / 12%);
-}
-
-h1 {
-  margin: 0.25rem 0 1rem;
-  font-size: clamp(2rem, 7vw, 3.5rem);
-}
-
-p {
-  line-height: 1.6;
-}
-
-.eyebrow {
-  margin: 0;
-  color: #35675d;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-.notice {
-  margin-top: 1.5rem;
-  padding: 1rem;
-  border-left: 0.25rem solid #35675d;
-  background: #eaf4f1;
-}
+:root { color-scheme: light; font-family: Inter, ui-sans-serif, system-ui, sans-serif; background: #f4f7f2; color: #18332d; }
+* { box-sizing: border-box; }
+body { margin: 0; background: radial-gradient(circle at top, #e1f3e8, #f7f5ef 46%); }
+button, input { font: inherit; }
+main { min-height: 100vh; padding: 3rem 1.25rem 2rem; }
+.hero, #assessment, footer { width: min(100%, 44rem); margin-inline: auto; }
+.hero { text-align: center; padding: 2rem 0 2.5rem; }
+.eyebrow { margin: 0; color: #27735e; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; font-size: .78rem; }
+h1 { margin: .5rem 0 .75rem; font-size: clamp(2.5rem, 9vw, 4.8rem); line-height: 1; letter-spacing: -.05em; }
+.lede { margin: 0 auto 1.5rem; max-width: 35rem; color: #4d625c; font-size: 1.12rem; line-height: 1.6; }
+.start-link, button { display: inline-block; border: 0; border-radius: .8rem; padding: .95rem 1.3rem; background: #176a55; color: white; font-weight: 750; text-decoration: none; cursor: pointer; }
+button { width: 100%; margin-top: 1.25rem; }
+button:disabled { cursor: not-allowed; opacity: .55; }
+.trust, footer { color: #6a7a75; font-size: .82rem; }
+.quiz-card, .result-card, .status { padding: clamp(1.35rem, 5vw, 2.5rem); border: 1px solid #dce8e0; border-radius: 1.3rem; background: rgba(255,255,255,.94); box-shadow: 0 1.4rem 4rem rgba(33,65,54,.12); }
+.progress { height: .45rem; overflow: hidden; border-radius: 1rem; background: #e8eee9; }
+.progress span { display: block; height: 100%; border-radius: inherit; background: #2aa178; transition: width .25s ease; }
+.step-count { color: #708078; font-size: .85rem; }
+h2 { margin: .5rem 0 1.4rem; font-size: clamp(1.7rem, 5vw, 2.4rem); }
+.choices { display: grid; gap: .75rem; }
+.choices label { padding: 1rem; border: 1px solid #d6e0da; border-radius: .8rem; text-transform: capitalize; cursor: pointer; }
+.choices label.selected { border-color: #238366; background: #eaf7f0; box-shadow: inset 0 0 0 1px #238366; }
+.choices input { position: absolute; opacity: 0; }
+.field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+label { display: grid; gap: .45rem; color: #40564f; font-size: .9rem; font-weight: 650; }
+input[type=number], input[type=password] { width: 100%; border: 1px solid #ccd9d1; border-radius: .7rem; padding: .8rem; background: white; color: #18332d; }
+.category { display: inline-block; margin-top: -.7rem; padding: .35rem .75rem; border-radius: 2rem; background: #e6f5ed; text-transform: capitalize; }
+.metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: .7rem; margin: 1.5rem 0; }
+.metrics div { padding: 1rem .6rem; border-radius: .8rem; background: #f0f6f2; text-align: center; }
+.metrics strong, .metrics span { display: block; }
+.metrics span { margin-top: .4rem; color: #687871; font-size: .75rem; }
+.locked { margin: 1.3rem 0; padding: 1.1rem; border-radius: 1rem; background: #f4f1e8; }
+.notice { margin-top: 1.3rem; padding: .9rem; border-left: .22rem solid #35836c; background: #edf6f1; color: #4e625b; font-size: .85rem; line-height: 1.5; }
+.error { color: #a52a2a; font-weight: 650; }
+footer { padding: 1.5rem 0; text-align: center; }
+@media (max-width: 560px) { main { padding-top: 1rem; } .field-grid, .metrics { grid-template-columns: 1fr; } .hero { padding-top: 1rem; } }

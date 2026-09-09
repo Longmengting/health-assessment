@@ -1,17 +1,45 @@
-# Health Path
+# Health Path — 健康测评系统
 
-一个可本地运行的健康测评作业：支持匿名 session、四步增量保存、刷新恢复、服务端健康计算、结果权限隔离，以及幂等的模拟支付解锁。
+[![CI](https://github.com/Longmengting/health-assessment/actions/workflows/ci.yml/badge.svg)](https://github.com/Longmengting/health-assessment/actions/workflows/ci.yml)
+![Next.js](https://img.shields.io/badge/Next.js-15-black)
+![React](https://img.shields.io/badge/React-19-61DAFB)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6)
+![Prisma](https://img.shields.io/badge/Prisma-6-2D3748)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791)
+![Vitest](https://img.shields.io/badge/tested%20with-Vitest-6E9F18)
+
+一个可本地完整运行的健康测评应用：匿名会话 → 四步增量作答 → 刷新恢复 → 服务端计算 → 结果权限隔离 → 幂等模拟支付解锁。
 
 > 所有结果仅用于教育参考，不构成医疗建议。
 
-## 技术栈
+## ✨ 核心亮点
 
-- Next.js 15 App Router + React 19 + TypeScript
-- Prisma 6 + PostgreSQL 16
-- Zod 数据验证
-- Vitest 单元测试与数据库集成测试
+| 能力 | 实现方式 |
+| --- | --- |
+| 🔒 **匿名安全会话** | 服务端只存 token 哈希，访问凭证放 HttpOnly Cookie，数据库泄露也无法伪造会话 |
+| 📝 **可恢复的分步作答** | 每步增量保存 + 版本号乐观锁，支持乱序拒绝、并发冲突检测，刷新页面进度不丢 |
+| 🧮 **服务端可信计算** | BMI / BMR / TDEE / 目标日期算法全部在服务端，Zod 严格校验输入，结果记录算法版本 |
+| 🛡️ **字段级权限隔离** | 非会员响应不泄露任何受保护字段（热量、曲线等），订阅过期自动降级为预览 |
+| 💳 **幂等模拟支付** | Bearer 密钥 + `eventId` 唯一约束 + 事务，回调可安全重放，事件冲突返回 409 |
+| ✅ **TDD 全流程** | 红 → 绿 → 重构，单元 + 数据库集成双测试，CI 每次推送自动跑 lint / typecheck / test / build |
 
-## 快速开始（Windows PowerShell）
+## 🗺️ 代码导览（给评审者）
+
+```
+src/
+  app/api/          # 路由层：契约解析、错误响应统一格式
+  app/pay/          # 模拟支付回调入口
+  features/
+    assessment/     # 业务核心：会话、作答、计算、结果权限
+    payment/        # 支付事件、订阅状态机
+  lib/              # 共享基础设施
+prisma/             # Schema 与迁移（含测试库分离）
+tests/
+  unit/             # 算法边界、非法输入
+  integration/      # 并发、幂等、权限、支付闭环（真实 PostgreSQL）
+```
+
+## 🚀 快速开始
 
 要求：Node.js 22、npm、Docker Desktop。
 
@@ -37,7 +65,7 @@ docker compose exec postgres createdb -U postgres health_path_test
 
 停止服务：`docker compose down`。默认不会删除数据库数据。
 
-## 演示流程
+## 🖥️ 演示流程
 
 1. 打开首页，完成性别、目标、身体数据、运动频率四步。
 2. 每一步都会写入服务端；刷新页面后从 `localStorage` 中的 sessionId 恢复进度，访问凭证保存在 HttpOnly Cookie。
@@ -46,7 +74,7 @@ docker compose exec postgres createdb -U postgres health_path_test
 
 `.env.example` 的密钥只适用于本地演示，真实环境不得复用。
 
-## 测试与构建
+## 🧪 测试与质量保障
 
 数据库集成测试只有在 `TEST_DATABASE_URL` 明确指向名称包含 `_test`、`-test`、`/test` 或 `test_` 的 PostgreSQL 数据库时才运行，防止误清空开发库。
 
@@ -67,9 +95,11 @@ npm run build
 - 支付：密钥验证、非法 payload、未完成测评拒绝、事件幂等、事件冲突、并发回调和支付前后 API 返回变化。
 - 页面：关键入口、信任文案与免责声明存在。
 
+CI（GitHub Actions）在每次推送和 PR 上自动执行 `lint → typecheck → test → build`。
+
 暂未覆盖真实支付平台、邮件登录、浏览器自动化和性能压测，因为本作业使用匿名 session 与模拟支付，重点是后端业务闭环。
 
-## API
+## 🔌 API
 
 所有成功响应统一为 `{ data, meta: { requestId } }`，错误响应统一为 `{ error: { code, message, fields? }, meta }`。
 
@@ -103,7 +133,7 @@ curl -X POST http://localhost:3000/pay \
 
 同一个 `eventId` 与同一 payload 重放会返回 `replayed: true`；复用 `eventId` 但更换内容会返回 `409 PAYMENT_EVENT_CONFLICT`。
 
-## 数据库 Schema
+## 🗄️ 数据库 Schema
 
 ```mermaid
 erDiagram
@@ -155,7 +185,7 @@ erDiagram
 
 设计要点：答案按步骤独立存储，新增步骤不需要扩展宽表；session 使用版本号做乐观并发控制；计算结果记录算法版本；订阅与支付事件分离，使支付回调可审计且幂等。
 
-## AI 使用复盘
+## 🤖 AI 使用复盘
 
 AI 用于把题目拆成数据模型、契约、业务服务、路由和测试几个可验证层；辅助枚举非法输入、并发写入、重放回调、过期订阅和字段泄漏等边界；同时生成 Prisma 迁移草案与测试数据，再通过 TypeScript、数据库约束和自动化测试逐项验证。
 
@@ -163,6 +193,6 @@ AI 用于把题目拆成数据模型、契约、业务服务、路由和测试�
 
 另一个修正是测试辅助函数曾用 `undefined` 表达“无 Authorization 请求头”，但 JavaScript 默认参数把它替换成了正确密钥，使测试实际走到了成功分支。通过单独的 `null` 哨兵表达缺失请求头后，测试才真正验证了 401 路径。这说明 AI 生成的测试也必须先观察失败原因，而不能只看用例名称。
 
-## 作业范围说明
+## 📌 范围说明
 
-本版本定位为本地可运行的精简作业，未配置公网部署与 CI。仓库包含迁移、Docker 本地数据库、自动化测试与生产构建命令，评审者可以完整重放录入、恢复、计算、权限和模拟支付流程。
+本版本定位为本地可运行的精简作业，未配置公网部署。仓库包含 CI、迁移、Docker 本地数据库、自动化测试与生产构建命令，评审者可以完整重放录入、恢复、计算、权限和模拟支付流程。

@@ -56,3 +56,6 @@ GREEN: after adding the minimal export, `npx vitest run tests/unit/smoke.test.ts
 
 - Ran `.\\node_modules\\.bin\\tsc.cmd --noEmit --pretty false` after the configuration fixes.
 - Result: exit code `0` in 3.19 seconds with no diagnostics.
+- Ran exactly one `npm run typecheck` process with a 60-second timeout wrapper.
+- Result: exit code `0`.
+- Stdout: `> health-path@0.1.0 typecheck` followed by `> tsc --noEmit`.

@@ -141,4 +141,74 @@ describe("mock payment route", () => {
       data: { eventId: callbackBody.eventId, replayed: true },
     });
   });
+
+  describe("demo mode (MOCK_PAYMENT_OPEN_DEMO=true)", () => {
+    beforeEach(() => {
+      vi.stubEnv("MOCK_PAYMENT_OPEN_DEMO", "true");
+    });
+
+    afterEach(() => {
+      vi.unstubAllEnvs();
+      vi.stubEnv("MOCK_PAYMENT_SECRET", configuredSecret);
+    });
+
+    it("accepts any supplied secret of at least 24 characters", async () => {
+      activateMockSubscriptionMock.mockResolvedValue({
+        eventId: callbackBody.eventId,
+        sessionId: callbackBody.sessionId,
+        subscriptionStatus: "ACTIVE",
+        activatedAt: "2026-01-01T00:00:00.000Z",
+        expiresAt: "2026-01-31T00:00:00.000Z",
+        replayed: false,
+      });
+
+      const response = await POST(
+        paymentRequest(callbackBody, "Bearer demo-1234567890abcdef-xyz"),
+      );
+
+      expect(response.status).toBe(200);
+      expect(activateMockSubscriptionMock).toHaveBeenCalledWith(callbackBody);
+    });
+
+    it("still rejects secrets shorter than 24 characters", async () => {
+      const response = await POST(paymentRequest(callbackBody, "Bearer short"));
+
+      expect(response.status).toBe(401);
+      await expect(response.json()).resolves.toMatchObject({
+        error: { code: "INVALID_PAYMENT_SECRET" },
+      });
+      expect(activateMockSubscriptionMock).not.toHaveBeenCalled();
+    });
+
+    it("still rejects a missing Authorization header", async () => {
+      const response = await POST(paymentRequest(callbackBody, null));
+
+      expect(response.status).toBe(401);
+      await expect(response.json()).resolves.toMatchObject({
+        error: { code: "INVALID_PAYMENT_SECRET" },
+      });
+      expect(activateMockSubscriptionMock).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("strict mode (default)", () => {
+    afterEach(() => {
+      vi.unstubAllEnvs();
+      vi.stubEnv("MOCK_PAYMENT_SECRET", configuredSecret);
+    });
+
+    it("rejects any supplied secret that does not match exactly", async () => {
+      vi.stubEnv("MOCK_PAYMENT_OPEN_DEMO", "false");
+
+      const response = await POST(
+        paymentRequest(callbackBody, "Bearer demo-1234567890abcdef-xyz"),
+      );
+
+      expect(response.status).toBe(401);
+      await expect(response.json()).resolves.toMatchObject({
+        error: { code: "INVALID_PAYMENT_SECRET" },
+      });
+      expect(activateMockSubscriptionMock).not.toHaveBeenCalled();
+    });
+  });
 });

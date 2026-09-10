@@ -37,6 +37,16 @@ function invalidPaymentSecret() {
   );
 }
 
+/**
+ * Demo mode is opt-in. When MOCK_PAYMENT_OPEN_DEMO === "true", any supplied
+ * secret of at least MINIMUM_SECRET_LENGTH characters is accepted. This keeps
+ * the production-style strict comparison as the default and avoids accidentally
+ * shipping an open verification path in real deployments.
+ */
+function isDemoModeEnabled() {
+  return process.env.MOCK_PAYMENT_OPEN_DEMO === "true";
+}
+
 export function requireMockPaymentAuthorization(request: Request) {
   const configuredSecret = process.env.MOCK_PAYMENT_SECRET;
   if (
@@ -50,10 +60,19 @@ export function requireMockPaymentAuthorization(request: Request) {
   const match = /^Bearer ([^\s]+)$/i.exec(authorization);
   const suppliedSecret = match?.[1] ?? "";
 
+  if (!match) throw invalidPaymentSecret();
+
+  if (isDemoModeEnabled()) {
+    if (suppliedSecret.length < MINIMUM_SECRET_LENGTH) {
+      throw invalidPaymentSecret();
+    }
+    return;
+  }
+
   // SHA-256 makes both inputs a fixed length before the timing-safe comparison.
   const secretMatches = timingSafeEqual(
     digest(suppliedSecret),
     digest(configuredSecret),
   );
-  if (!match || !secretMatches) throw invalidPaymentSecret();
+  if (!secretMatches) throw invalidPaymentSecret();
 }

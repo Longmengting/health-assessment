@@ -195,8 +195,9 @@ export default function AssessmentClient() {
           <div className="locked">
             <p>{result.summary}</p>
             <h3>解锁完整评估</h3>
-            <label>本地演示支付密钥<input type="password" value={secret} onChange={(event) => setSecret(event.target.value)} /></label>
-            <button type="button" onClick={unlock} disabled={busy || secret.length < 24}>模拟支付并解锁</button>
+            <p className="hint">演示版：填入任意 24 个以上字符即可模拟支付成功。</p>
+            <label>演示模式密钥<input type="password" placeholder="例如：demo-1234567890abcdef" value={secret} onChange={(event) => setSecret(event.target.value)} /></label>
+            <button type="button" onClick={unlock} disabled={busy || secret.length < 24}>演示支付并解锁</button>
           </div>
         )}
         <p className="notice">{result.disclaimer}</p>

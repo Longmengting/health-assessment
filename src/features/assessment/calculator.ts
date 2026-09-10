@@ -19,7 +19,7 @@ const MAX_DAILY_ADJUSTMENT = 750;
 const FEMALE_MINIMUM_CALORIES = 1200;
 const MALE_MINIMUM_CALORIES = 1500;
 const EDUCATIONAL_DISCLAIMER =
-  "This educational estimate is not medical advice. Consult a qualified health professional for personalized guidance.";
+  "本评估为健康科普，不构成医学建议。如需个性化指导，请咨询专业医疗人员。";
 
 function roundToOneDecimal(value: number) {
   return Math.round((value + Number.EPSILON) * 10) / 10;

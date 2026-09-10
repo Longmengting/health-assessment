@@ -7,14 +7,14 @@ export default function HomePage() {
   return (
     <main>
       <header className="hero">
-        <p className="eyebrow">Educational wellness estimate</p>
+        <p className="eyebrow">健康科普评估</p>
         <h1>{APP_NAME}</h1>
-        <p className="lede">A practical starting point for your health goal, personalized in 4 short steps.</p>
-        <a className="start-link" href="#assessment">Start my assessment</a>
-        <p className="trust">Private by design · Takes about 2 minutes · No account required</p>
+        <p className="lede">4 步个性化定制，开启你的健康目标之旅。</p>
+        <a className="start-link" href="#assessment">开始我的评估</a>
+        <p className="trust">隐私保护 · 仅需 2 分钟 · 无需注册</p>
       </header>
       <div id="assessment"><AssessmentClient /></div>
-      <footer>This educational estimate is not medical advice.</footer>
+      <footer>本评估为健康科普，不构成医学建议。</footer>
     </main>
   );
 }

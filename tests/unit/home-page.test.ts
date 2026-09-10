@@ -8,9 +8,9 @@ describe("assessment home page", () => {
   it("renders the complete local-demo funnel entry points", () => {
     const html = renderToStaticMarkup(createElement(HomePage));
 
-    expect(html).toContain("Start my assessment");
-    expect(html).toContain("4 short steps");
-    expect(html).toContain("Educational wellness estimate");
-    expect(html).toContain("not medical advice");
+    expect(html).toContain("开始我的评估");
+    expect(html).toContain("4 步个性化定制");
+    expect(html).toContain("健康科普评估");
+    expect(html).toContain("不构成医学建议");
   });
 });

@@ -1,1 +1,1 @@
-export const APP_NAME = "Health Path";
+export const APP_NAME = "健康路径";

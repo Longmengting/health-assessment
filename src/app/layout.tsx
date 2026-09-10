@@ -6,12 +6,12 @@ import { APP_NAME } from "@/lib/app-config";
 
 export const metadata: Metadata = {
   title: APP_NAME,
-  description: "Educational health assessment estimates, not medical advice.",
+  description: "健康评估科普，不构成医学建议。",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
-    <html lang="en">
+    <html lang="zh-CN">
       <body>{children}</body>
     </html>
   );

@@ -114,7 +114,7 @@ describe("assessment result policy", () => {
       upgradeRequired: true,
       disclaimer,
     });
-    expect(preview.summary).toContain("normal");
+    expect(preview.summary).toContain("正常");
     expect(preview.lockedFeatures).toEqual(PROTECTED_RESULT_KEYS);
 
     const previewKeys = recursiveObjectKeys(preview);

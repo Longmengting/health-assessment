@@ -144,13 +144,28 @@ function parseAuthorizedStoredResult(
   return parsed.data;
 }
 
+function bmiCategoryLabel(category: string): string {
+  switch (category) {
+    case "underweight":
+      return "偏瘦";
+    case "normal":
+      return "正常";
+    case "overweight":
+      return "超重";
+    case "obese":
+      return "肥胖";
+    default:
+      return category;
+  }
+}
+
 function previewFromParsed(result: ParsedStoredResult) {
   return {
     access: "preview" as const,
     id: result.id,
     bmi: result.bmi,
     bmiCategory: result.bmiCategory,
-    summary: `Your BMI is ${result.bmi}, which is in the ${result.bmiCategory} range.`,
+    summary: `您的 BMI 是 ${result.bmi}，属于${bmiCategoryLabel(result.bmiCategory)}范围。`,
     lockedFeatures: [...PROTECTED_RESULT_KEYS],
     upgradeRequired: true as const,
     disclaimer: result.protectedData.disclaimer,

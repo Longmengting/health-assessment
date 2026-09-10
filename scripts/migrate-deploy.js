@@ -1,5 +1,6 @@
 // Runs `prisma migrate deploy` during Vercel builds only.
 // Locally and in CI (no cloud database detected) it is a no-op.
+/* eslint-disable @typescript-eslint/no-require-imports */
 const { execSync } = require("node:child_process");
 
 const hasVercelPostgres = Boolean(
